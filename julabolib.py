@@ -15,6 +15,8 @@ import serial
 import time
 import re
 
+# Set the minimum safe time interval between sent commands that is required according to the user manual
+SAFE_TIME_INTERVAL = 0.25
 
 class JULABO():
 	def __init__(self,port,baud):
@@ -46,6 +48,7 @@ class JULABO():
 
 		"""
 		if command == '': return ''
+		time.sleep(SAFE_TIME_INTERVAL)
 		self.ser.write( bytes(command, 'ascii') )
 		time.sleep(0.1)
 		first_res = self.ser.readline() # read out echoed command
