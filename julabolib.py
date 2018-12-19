@@ -51,11 +51,10 @@ class JULABO():
 		time.sleep(SAFE_TIME_INTERVAL)
 		self.ser.write( bytes(command, 'ascii') )
 		time.sleep(0.1)
-		first_res = self.ser.readline() # read out echoed command
-		logging.debug('First response from unit (command): ' + first_res.decode('ascii'))
-		second_res = self.ser.readline()
-		logging.debug('Second response from unit (response): ' + second_res.decode('ascii'))
-		return second_res # return response from the unit
+		logging.debug('Command sent to the unit: ' + command)
+		response = self.ser.readline()
+		logging.debug('Response from unit: ' + response.decode('ascii'))
+		return response.decode('ascii') # return response from the unit
 
 	def flush_input_buffer(self):
 		""" Flush the input buffer of the serial port.
