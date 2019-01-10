@@ -21,4 +21,7 @@ print("Julabo working temperature is: " + str(val) )
 val = mychiller.get_temperature()
 print("Julabo actual bath temperature is: " + str(val) )
 
+val = mychiller.get_power()
+print("Julabo power mode is (1 == ON, 0 == OFF): " + str(val) )
+
 mychiller.close()
