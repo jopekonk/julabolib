@@ -23,13 +23,13 @@ class JULABO():
 	def __init__(self,port,baud):
 		self.port = port
 		self.ser = serial.Serial( port=self.port,
-								  bytesize=serial.SEVENBITS,
-								  parity=serial.PARITY_EVEN,
-								  stopbits=serial.STOPBITS_ONE,
-								  baudrate=baud,
-								  xonxoff=False,
-								  rtscts=True,
-								  timeout=1 )
+					  bytesize=serial.SEVENBITS,
+					  parity=serial.PARITY_EVEN,
+					  stopbits=serial.STOPBITS_ONE,
+					  baudrate=baud,
+					  xonxoff=False,
+					  rtscts=True,
+					  timeout=1 )
 
 		logging.basicConfig(format='julabolib: %(asctime)s - %(message)s', datefmt='%y-%m-%d %H:%M:%S', level=logging.WARNING)
 		#logging.basicConfig(format='julabolib: %(asctime)s - %(message)s', datefmt='%y-%m-%d %H:%M:%S', level=logging.DEBUG)
