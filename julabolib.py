@@ -76,6 +76,15 @@ class JULABO():
 		"""
 		response = self.send_command( 'out_mode_05 %d' % 0 )
 
+	def get_power(self):
+		""" The function gets the power state of the unit.
+			1 == ON
+			0 == OFF
+
+		"""
+		response = self.send_command( 'in_mode_05' )
+		return response
+
 	def set_work_temperature(self, temp):
 		""" The function sets the working temperature to the given value.
 
