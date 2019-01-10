@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-A library for communicating to Julabo Economy Series CF30/CF40 cooling units
+A library for communicating to Julabo Economy Series CF30/CF40/FL11006 cooling units
 using the serial RS232 interface
 
-Protocol data format is 4800 baud 8E1 (8 bit, parity even, 1 stop bit, hardware handshake)
-The input characters are echoed before the response from the unit.
+Protocol data format is 4800 baud 7E1 (7 bit, parity even, 1 stop bit, hardware handshake)
 """
 __author__ = "Joonas Konki"
 __license__ = "MIT, see LICENSE for more details"
@@ -18,19 +17,23 @@ import re
 # Set the minimum safe time interval between sent commands that is required according to the user manual
 SAFE_TIME_INTERVAL = 0.25
 
+END_CHAR = '\x0D'
+
 class JULABO():
 	def __init__(self,port,baud):
 		self.port = port
 		self.ser = serial.Serial( port=self.port,
-		                          bytesize=serial.EIGHTBITS,
+								  bytesize=serial.SEVENBITS,
 								  parity=serial.PARITY_EVEN,
+								  stopbits=serial.STOPBITS_ONE,
 								  baudrate=baud,
 								  xonxoff=False,
 								  rtscts=True,
 								  timeout=1 )
 
-		logging.basicConfig(format='julabolib: %(asctime)s - %(message)s', datefmt='%y-%m-%d %H:%M:%S')
-		logging.debug('Serial port ' + self.port + 'opened at speed ' + str(baud))
+		logging.basicConfig(format='julabolib: %(asctime)s - %(message)s', datefmt='%y-%m-%d %H:%M:%S', level=logging.WARNING)
+		#logging.basicConfig(format='julabolib: %(asctime)s - %(message)s', datefmt='%y-%m-%d %H:%M:%S', level=logging.DEBUG)
+		logging.debug('Serial port ' + self.port + ' opened at speed ' + str(baud))
 
 		time.sleep(0.1) # Wait 100 ms after opening the port before sending commands
 		self.ser.flushOutput() # Flush the output buffer of the serial port before sending any new commands
@@ -49,7 +52,7 @@ class JULABO():
 		"""
 		if command == '': return ''
 		time.sleep(SAFE_TIME_INTERVAL)
-		self.ser.write( bytes(command, 'ascii') )
+		self.ser.write( bytes( command+END_CHAR , 'ascii') )
 		time.sleep(0.1)
 		logging.debug('Command sent to the unit: ' + command)
 		response = self.ser.readline()
@@ -65,44 +68,44 @@ class JULABO():
 		""" The function turns the power ON.
 
 		"""
-		response = self.send_command( 'out_mode_05 %d\r' % 1 )
+		response = self.send_command( 'out_mode_05 %d' % 1 )
 
 	def set_power_off(self):
 		""" The function turns the power OFF.
 
 		"""
-		response = self.send_command( 'out_mode_05 %d\r' % 0 )
+		response = self.send_command( 'out_mode_05 %d' % 0 )
 
 	def set_work_temperature(self, temp):
 		""" The function sets the working temperature to the given value.
 
 		"""
-		response = self.send_command( 'out_sp_00 %.2f\r' % temp )
+		response = self.send_command( 'out_sp_00 %.2f' % temp )
 
-	def get_work_temperature(self, temp):
+	def get_work_temperature(self):
 		""" The function gets the working temperature to the given value.
 
 		"""
-		response = self.send_command( 'in_sp_00\r')
+		response = self.send_command( 'in_sp_00')
 		return float(response)
 
 	def get_version(self):
 		""" The function gets the software version of the unit.
 
 		"""
-		response = self.send_command( 'version\r')
+		response = self.send_command( 'version')
 		return response
 
 	def get_status(self):
 		""" The function gets the status message or error message from the unit.
 
 		"""
-		response = self.send_command( 'status\r')
+		response = self.send_command( 'status')
 		return response
 
 	def get_temperature(self):
 		""" The function gets the actual bath temperature of the unit
 
 		"""
-		response = self.send_command( 'in_pv_00\r')
+		response = self.send_command( 'in_pv_00')
 		return float(response)
